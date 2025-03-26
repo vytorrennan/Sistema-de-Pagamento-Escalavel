@@ -1,0 +1,11 @@
+asgiref==3.8.1
+Django==5.1.7
+sqlparse==0.5.3
+gunicorn==23.0.0 # servidor HTTP WSGI
+celery==5.4.0 
+psycopg2-binary==2.9.10 # adaptador de comandos do PostgreSQL para Python
+python-json-logger==3.3.0 # formatador de logs para o formato JSON
+python-dotenv==1.1.0
+stripe==11.6.0
+django-celery-beat==2.7.0
+flower==2.0.1

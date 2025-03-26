@@ -1,0 +1,94 @@
+services:
+  app:
+    build: .
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - rabbitmq
+    environment:
+      - DATABASE_URL=postgres://app:app@db:5432/db
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+      - POSTGRES_DB=db
+      - POSTGRES_USER=app
+      - POSTGRES_PASSWORD=app
+    networks:
+      - app-network
+
+  db:
+    image: postgres:17
+    container_name: postgres_db
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: db
+    networks:
+      - app-network
+  
+  rabbitmq:
+    image: rabbitmq:3.9-management
+    ports:
+      - "15672:15672"  # Management UI
+      - "5672:5672"    # AMQP port
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - app-network
+  
+  celery_worker:
+    build: .
+    volumes:
+      - .:/app
+    environment:
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+      - DATABASE_URL=postgres://app:app@db:5432/db
+      - POSTGRES_DB=db
+      - POSTGRES_USER=app
+      - POSTGRES_PASSWORD=app
+    depends_on:
+      - app
+      - db
+      - rabbitmq
+    command: celery -A setup worker -l INFO
+    networks:
+      - app-network
+
+  celery_beat:
+    build: .
+    volumes:
+      - .:/app
+    environment:
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+      - DATABASE_URL=postgres://app:app@db:5432/db
+      - POSTGRES_DB=db
+      - POSTGRES_USER=app
+      - POSTGRES_PASSWORD=app
+    depends_on:
+      - app
+      - db
+      - rabbitmq
+    command: celery -A setup beat -l INFO
+    networks:
+      - app-network
+
+  # stripe:
+  #   image: stripe/stripe-cli
+  #   container_name: stripe
+  #   ports:
+  #     - "4242:4242"
+  #   environment:
+  #     STRIPE_API_KEY: "sk_test_xxxxxxx"
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge
+  
