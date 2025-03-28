@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Produtos - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Produtos Disponíveis</h1>
+    
+    {% if not user.is_authenticated %}
+        <div class="alert alert-info">
+            <a href="{% url 'login' %}">Entre</a> ou <a href="{% url 'login' %}">cadastre-se</a> para fazer uma compra.
+        </div>
+    {% endif %}
+
+
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for product in products %}
+            <div class="col">
+                <div class="card h-100">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" class="card-img-top product-image" alt="{{ product.name }}">
+                    {% else %}
+                        <img src="https://via.placeholder.com/300" class="card-img-top product-image" alt="Placeholder">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ product.name }}</h5>
+                        <p class="card-text">{{ product.description }}</p>
+                        <p class="card-text"><strong>Preço: R$ {{ product.price }}</strong></p>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="alert alert-warning">
+                    Nenhum produto disponível no momento.
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if user.is_authenticated and products %}
+        <div class="text-center mt-4">
+            <a href="{% url 'checkout' %}" class="btn btn-primary btn-lg">
+                Ir para o Checkout
+            </a>
+        </div>
+    {% endif %}
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                Histórico de Pedidos
+            </div>
+            <ul class="list-group list-group-flush">
+                {% if orders %}
+                    {% for order in orders %}
+                        <li class="list-group-item">
+                            <p>
+                                Pedido #{{ order.id }} - {{ order.status }}
+                            </p>
+                        </li>
+                    {% endfor %}
+                {% else %}
+                    <li class="list-group-item">Nenhum pedido encontrado</li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    # command: python manage.py runserver 0.0.0.0:8000
+    entrypoint: ["/bin/bash", "scripts/runApp.sh"]
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DJANGO_SETTINGS_MODULE=ecommerce.settings
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/ecommerce
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+      - STRIPE_SECRET_KEY=sk_test_51R7QVLQMxPjsMSyrxozHIF7BVJuE5zHFDXexYPZIrvUd8nkaU41ZoeplCXzu5n6JwCGzOEj0bc0rP0YkvrWWVxOi00Yb1OUjV0
+      - STRIPE_PUBLISHABLE_KEY=pk_test_51R7QVLQMxPjsMSyrst7vA0ZRRRdx0jh0tAvd3NwRb6r5yRvYA40zEl4I3KmPBcy67ud6JTtlh8MlXBh9u6eSjXoy00Hdj9HK2g
+    depends_on:
+      - db
+      - rabbitmq
+
+  db:
+    image: postgres:13
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=ecommerce
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  celery:
+    build: .
+    command: celery -A ecommerce worker -l info
+    volumes:
+      - .:/app
+    environment:
+      - DJANGO_SETTINGS_MODULE=ecommerce.settings
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/ecommerce
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+      - STRIPE_SECRET_KEY=sk_test_51R7QVLQMxPjsMSyrxozHIF7BVJuE5zHFDXexYPZIrvUd8nkaU41ZoeplCXzu5n6JwCGzOEj0bc0rP0YkvrWWVxOi00Yb1OUjV0
+    depends_on:
+      - web
+      - rabbitmq
+      - db
+
+volumes:
+  postgres_data: 

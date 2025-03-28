@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Pagamento Cancelado - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container text-center">
+    <div class="card">
+        <div class="card-body">
+            <h1 class="card-title text-danger mb-4">
+                <i class="fas fa-times-circle"></i> Pagamento Cancelado
+            </h1>
+            
+            <p class="lead">
+                O processo de pagamento foi cancelado.
+            </p>
+            
+            <p>
+                Se você encontrou algum problema durante o processo de pagamento,
+                por favor, tente novamente ou entre em contato com nosso suporte.
+            </p>
+            
+            <div class="mt-4">
+                <a href="{% url 'product_list' %}" class="btn btn-primary me-2">
+                    Voltar para a Loja
+                </a>
+                <a href="{% url 'checkout' %}" class="btn btn-outline-primary">
+                    Tentar Novamente
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

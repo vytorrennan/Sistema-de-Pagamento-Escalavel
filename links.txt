@@ -1,0 +1,13 @@
+https://www.wpoven.com/tools/free-smtp-server-for-testing
+yzj9e55pv3@illubd.com
+
+https://docs.stripe.com/testing?locale=pt-BR
+https://temp-mail.io/en
+
+
+12/34
+123
+Pagamento aprovado 4242 4242 4242 4242
+Pagamento recusado por motivo genérico	4000000000000002
+Pagamento recusado por fundos insuficientes	4000000000009995
+Pagamento recusado por vencimento de cartão	4000000000000069
